@@ -1,0 +1,62 @@
+cff-version: 1.2.0
+message: "If you use PANINI-DR, please cite the paper below."
+title: "PANINI-DR"
+type: software
+version: 0.1.0
+license: Apache-2.0
+repository-code: "https://github.com/roychowdhuryresearch/panini-dr"
+url: "https://roychowdhuryresearch.github.io/PANINI-DR_Project_Page/"
+abstract: >-
+  PANINI-DR is a multi-agent deep-research harness that keeps an explicit research
+  workspace of subquestions, dependencies, findings and evidence, and verifies each
+  finding before it is reused.
+keywords:
+  - deep research
+  - LLM agents
+  - multi-agent
+  - verification
+  - Generative Semantic Workspace
+  - BrowseComp-Plus
+  - FRAMES
+  - MoNaCo
+authors:
+  - given-names: M. Yigit
+    family-names: Turali
+    affiliation: "University of California, Los Angeles"
+  - given-names: Shreyas
+    family-names: Rajesh
+    affiliation: "University of California, Los Angeles"
+  - given-names: M. Efe
+    family-names: Lorasdagi
+    affiliation: "University of California, Los Angeles"
+  - given-names: Chenda
+    family-names: Duan
+    affiliation: "University of California, Los Angeles"
+  - given-names: Kartik
+    family-names: Sharma
+    affiliation: "University of California, Los Angeles"
+  - given-names: Vwani
+    family-names: Roychowdhury
+    affiliation: "University of California, Los Angeles"
+preferred-citation:
+  type: article
+  title: "PANINI-DR: Controlled Deep Research through Generative Semantic Workspaces"
+  journal: "arXiv preprint arXiv:2610.15208"
+  year: 2026
+  url: "https://arxiv.org/abs/2610.15208"
+  identifiers:
+    - type: other
+      value: "arXiv:2610.15208"
+  authors:
+    - given-names: M. Yigit
+      family-names: Turali
+    - given-names: Shreyas
+      family-names: Rajesh
+    - given-names: M. Efe
+      family-names: Lorasdagi
+    - given-names: Chenda
+      family-names: Duan
+    - given-names: Kartik
+      family-names: Sharma
+    - given-names: Vwani
+      family-names: Roychowdhury
