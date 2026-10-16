@@ -188,7 +188,8 @@ ODC-BY); please cite it if you use this corpus with its questions.
 @article{turali2026paninidr,
   title   = {{PANINI-DR}: Controlled Deep Research through Generative Semantic Workspaces},
   author  = {Turali, M. Yigit and Rajesh, Shreyas and Lorasdagi, M. Efe and Duan, Chenda and Sharma, Kartik and Roychowdhury, Vwani},
-  journal = {arXiv preprint arXiv:TODO},
+  journal = {arXiv preprint arXiv:2610.15208},
+  url     = {https://arxiv.org/abs/2610.15208},
   year    = {2026}
 }
 ```

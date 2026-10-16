@@ -3,7 +3,7 @@
 PANINI-DR is the harness from the paper **"PANINI-DR: Controlled Deep Research
 through Generative Semantic Workspaces"** (M. Yigit Turali\*, Shreyas Rajesh\*,
 M. Efe Lorasdagi, Chenda Duan, Kartik Sharma, Vwani Roychowdhury; \*equal
-contribution; arXiv: TODO). It answers hard multi-step questions over a fixed
+contribution; [arXiv:2610.15208](https://arxiv.org/abs/2610.15208)). It answers hard multi-step questions over a fixed
 document collection. An Orchestrator agent asks a Planner for a research plan,
 sends Researcher agents after the open subquestions, and writes the final
 answer. All roles run on one OpenAI-compatible LLM endpoint (the paper uses
@@ -411,7 +411,8 @@ non-commercial use only.
 @article{turali2026paninidr,
   title   = {{PANINI-DR}: Controlled Deep Research through Generative Semantic Workspaces},
   author  = {Turali, M. Yigit and Rajesh, Shreyas and Lorasdagi, M. Efe and Duan, Chenda and Sharma, Kartik and Roychowdhury, Vwani},
-  journal = {arXiv preprint arXiv:TODO},
+  journal = {arXiv preprint arXiv:2610.15208},
+  url     = {https://arxiv.org/abs/2610.15208},
   year    = {2026}
 }
 ```
