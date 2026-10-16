@@ -1,16 +1,7 @@
 # PANINI-DR
 
-PANINI-DR is the harness from the paper **"PANINI-DR: Controlled Deep Research
-through Generative Semantic Workspaces"** (M. Yigit Turali\*, Shreyas Rajesh\*,
-M. Efe Lorasdagi, Chenda Duan, Kartik Sharma, Vwani Roychowdhury; \*equal
-contribution; [arXiv:2610.15208](https://arxiv.org/abs/2610.15208);
-[project page](https://roychowdhuryresearch.github.io/PANINI-DR_Project_Page/)). It answers hard multi-step questions over a fixed
-document collection. An Orchestrator agent asks a Planner for a research plan,
-sends Researcher agents after the open subquestions, and writes the final
-answer. All roles run on one OpenAI-compatible LLM endpoint (the paper uses
-`gpt-oss-120b` on vLLM). Search is hybrid (BM25 + Qwen3-Embedding-8B, fused,
-then reranked by jina-reranker-v3.5), and an article-reader sub-agent opens
-whole documents.
+PANINI-DR is a deep-research harness that is designed to answer hard multi-step questions over a fixed
+document collection. It is designed to use an Orchestrator agent that coordinates with a Planner agent for a research plan that breaks down the complicated queries into simpler subqueries. The orchestrator further deploys  deploys Researcher agents to answer and verify each subquestion before submitting the final answer. We should Panini-DR outperforms existing state of the art approaches in Deep Research tasks.  
 
 Two ideas set it apart:
 
@@ -405,6 +396,9 @@ ships no benchmark questions, answers, corpora, indexes or model weights; the
 scripts download them under their own terms, which [NOTICE](NOTICE) summarises.
 jina-reranker-v3.5, the reranker of the paper configuration, is licensed for
 non-commercial use only.
+
+
+If you found our work usefule please cite us as: 
 
 ## Citation
 
