@@ -3,6 +3,8 @@
 PANINI-DR is a deep-research harness that is designed to answer hard multi-step questions over a fixed
 document collection. It is designed to use an Orchestrator agent that coordinates with a Planner agent for a research plan that breaks down the complicated queries into simpler subqueries. The orchestrator further deploys  deploys Researcher agents to answer and verify each subquestion before submitting the final answer. We should Panini-DR outperforms existing state of the art approaches in Deep Research tasks.  
 
+For more details please check out our paper: https://arxiv.org/abs/2610.15208
+
 Two ideas set it apart:
 
 - **Explicit research state.** The plan is a shared workspace in the Generative
