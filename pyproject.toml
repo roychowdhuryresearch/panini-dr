@@ -25,7 +25,8 @@ dependencies = [
 
 [project.urls]
 Paper = "https://arxiv.org/abs/2610.15208"
-Repository = "https://github.com/YigitTurali/panini-dr"
+Homepage = "https://roychowdhuryresearch.github.io/PANINI-DR_Project_Page/"
+Repository = "https://github.com/roychowdhuryresearch/panini-dr"
 
 [project.optional-dependencies]
 # Dense retrieval (Qwen3-Embedding-8B query encoder + FAISS). Needed for the
