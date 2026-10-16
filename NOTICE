@@ -1,0 +1,86 @@
+PANINI-DR
+=========
+
+Copyright 2026 The PANINI-DR authors.
+
+The code in this repository is licensed under the Apache License, Version 2.0
+(see LICENSE). The terms below cover third-party data, models and code that the
+scripts download or call; they are not covered by that licence.
+
+This repository contains the PANINI-DR harness only. It does not contain or
+redistribute any benchmark questions, answers, gold annotations, corpora,
+indexes, judge outputs or model weights. The scripts under datasets/ and
+serve/ download or build them on the user's machine, under the terms below.
+The FRAMES and MoNaCo corpora and the panini-dr verify bundle are published
+separately on Hugging Face (see datasets/README.md); their terms are below too.
+
+Third-party data, models and code used by the scripts
+----------------------------------------------------
+
+Wikipedia
+    The FRAMES-824 and MoNaCo-1315 corpora used in the paper are built from
+    English Wikipedia articles (live revisions fetched in 2026). Wikipedia text
+    is licensed under the Creative Commons Attribution-ShareAlike 4.0
+    International licence (CC BY-SA 4.0). Any redistribution of those corpora
+    (including our published copies, roychowdhuryresearch/panini-dr-frames-corpus
+    and roychowdhuryresearch/panini-dr-monaco-corpus) must credit Wikipedia
+    contributors and carry the same licence.
+
+FRAMES (google/frames-benchmark)
+    Questions and answers are distributed by Google under the Apache License
+    2.0 (see the dataset card). datasets/frames/prepare.py downloads them; they
+    are not included here.
+
+BrowseComp-Plus (Tevatron/browsecomp-plus, -corpus, -indexes)
+    Queries and answers are distributed obfuscated, with a canary, so that the
+    benchmark never appears as plain text online. We do not redistribute the
+    queries, answers, corpus or indexes. The queries are decrypted with the
+    authors' own script from a checkout of their repository. Never commit or
+    publish the decrypted files.
+
+MoNaCo (allenai/MoNaCo_Benchmark)
+    Released under ODC-BY with the request "DO NOT redistribute the unzipped data
+    files online" and a canary string. We do not redistribute MoNaCo questions,
+    answers or gold annotations. datasets/monaco/prepare.py builds the question
+    file locally from the official release. The MoNaCo corpus we publish
+    (roychowdhuryresearch/panini-dr-monaco-corpus) is gated for the same reason:
+    access requires accepting MoNaCo's terms.
+
+openai/gpt-oss-120b
+    Apache License 2.0. Served with vLLM (serve/gpt_oss_120b.sh); not bundled.
+
+jinaai/jina-reranker-v3.5
+    Creative Commons Attribution-NonCommercial 4.0 (CC BY-NC 4.0). The paper
+    configuration uses it as the reranker. NON-COMMERCIAL USE ONLY: commercial
+    users must replace it (results will then differ from the paper). Not
+    bundled; serve/jina_reranker.sh downloads it.
+
+Qwen/Qwen3-Embedding-8B
+    Apache License 2.0. Query/document encoder for dense retrieval; not bundled.
+
+BrowseComp-Plus grader template and MoNaCo V2 judge
+    panini-dr score grades with the benchmark authors' own code: the
+    BrowseComp-Plus grading template (texttron/BrowseComp-Plus, MIT) and the
+    MoNaCo authors' V2 LLM judge (tomerwolgithub/monaco, which states no licence
+    for its code). Neither is included in this repository.
+    scripts/fetch_grader_sources.py clones both; src/panini_dr/eval/official.py
+    loads them from the user's checkouts.
+
+The panini-dr verify bundle
+---------------------------
+
+The bundle that panini-dr verify replays is published in the verify/
+directory of roychowdhuryresearch/panini-dr-frames-corpus, not in this
+repository. It holds recorded runs of the paper configuration on 8 FRAMES
+questions and contains:
+
+    - FRAMES questions and gold answers (google/frames-benchmark,
+      Apache License 2.0);
+    - passages of English Wikipedia text from the FRAMES corpus, inside the
+      recorded prompts, reranker requests and traces (CC BY-SA 4.0: credit
+      Wikipedia contributors and share alike);
+    - recorded outputs of openai/gpt-oss-120b (an Apache-2.0 model), and the
+      Qwen/Qwen3-Embedding-8B query vectors and jinaai/jina-reranker-v3.5
+      relevance scores that the recorded runs received.
+
+It contains no BrowseComp-Plus or MoNaCo data.

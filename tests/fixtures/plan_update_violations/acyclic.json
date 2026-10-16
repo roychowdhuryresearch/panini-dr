@@ -1,0 +1,114 @@
+{
+ "question_id": "toy-acyclic",
+ "question": "Which member of the Harrow Lantern Choir was born on Pellam Isle?",
+ "clause": "acyclic",
+ "plan": {
+  "entities": [
+   {
+    "id": "e_group",
+    "kind": "filled",
+    "name": "Harrow Lantern Choir",
+    "value_type": null,
+    "is_target": false,
+    "category": true,
+    "role": "list-header",
+    "state": null,
+    "literal_value": null,
+    "retrieval_hint": null,
+    "verification_claim": null
+   },
+   {
+    "id": "e_place",
+    "kind": "filled",
+    "name": "Pellam Isle",
+    "value_type": null,
+    "is_target": false,
+    "category": false,
+    "role": "scope-filter",
+    "state": null,
+    "literal_value": null,
+    "retrieval_hint": null,
+    "verification_claim": null
+   },
+   {
+    "id": "b_members",
+    "kind": "blank",
+    "name": null,
+    "value_type": "list",
+    "is_target": false,
+    "category": false,
+    "role": "list-member",
+    "state": null,
+    "literal_value": null,
+    "retrieval_hint": "Who are the members of the Harrow Lantern Choir?",
+    "verification_claim": "The candidate must be a member of the Harrow Lantern Choir."
+   },
+   {
+    "id": "t",
+    "kind": "blank",
+    "name": null,
+    "value_type": "entity",
+    "is_target": true,
+    "category": false,
+    "role": "target",
+    "state": null,
+    "literal_value": null,
+    "retrieval_hint": "Which person born on Pellam Isle appears in {b_members}?",
+    "verification_claim": "The candidate must be a member of the Harrow Lantern Choir and must have been born on Pellam Isle."
+   },
+   {
+    "id": "b_birthplace",
+    "kind": "blank",
+    "name": null,
+    "value_type": "entity",
+    "is_target": false,
+    "category": false,
+    "role": "intermediate",
+    "state": null,
+    "literal_value": null,
+    "retrieval_hint": "What is the birthplace of {t}?",
+    "verification_claim": "{t} was born in {b_birthplace}."
+   }
+  ],
+  "verb_phrases": [
+   {
+    "id": "vp1",
+    "phrase": "members",
+    "subject_id": "e_group",
+    "object_id": "b_members"
+   },
+   {
+    "id": "vp2",
+    "phrase": "appears_in",
+    "subject_id": "t",
+    "object_id": "b_members"
+   },
+   {
+    "id": "vp3",
+    "phrase": "born_in",
+    "subject_id": "t",
+    "object_id": "e_place"
+   },
+   {
+    "id": "vp_birthplace",
+    "phrase": "born_in",
+    "subject_id": "t",
+    "object_id": "b_birthplace"
+   }
+  ],
+  "constraints": [
+   {
+    "id": "c_eq_birthplace",
+    "kind": "equals",
+    "op": null,
+    "args_blanks": [],
+    "args_refs": [],
+    "candidate_entity_ids": [],
+    "sort_by_blank_ids": [],
+    "left_ref": "b_birthplace",
+    "right_ref": "e_place",
+    "output_blank_id": "b_birthplace"
+   }
+  ]
+ }
+}

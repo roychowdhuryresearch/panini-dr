@@ -1,0 +1,339 @@
+"""Unit tests for the per-level researcher prompt builder."""
+
+from __future__ import annotations
+
+from panini_dr.adapters.ours._planner_exec import BlankResult
+from panini_dr.adapters.ours._researcher_prompt import (
+    RESEARCHER_LEGEND,
+    RESEARCHER_RULES,
+    RESEARCHER_TASK_BANNER,
+    build_researcher_prompt,
+)
+
+
+def _picasso_floyd_plan():
+    return {
+        "entities": [
+            {"id": "e1", "kind": "filled", "name": "Pablo Picasso", "role": "subject"},
+            {"id": "e2", "kind": "filled", "name": "Pink Floyd", "role": "subject"},
+            {"id": "b_year", "kind": "blank", "role": "bridge-date", "value_type": "date"},
+            {
+                "id": "t",
+                "kind": "blank",
+                "role": "target",
+                "value_type": "entity",
+                "is_target": True,
+            },
+        ],
+        "verb_phrases": [
+            {"id": "vp1", "phrase": "died_in", "subject_id": "e1", "object_id": "b_year"},
+            {"id": "vp2", "phrase": "released_in_year", "subject_id": "e2", "object_id": "b_year"},
+            {"id": "vp3", "phrase": "released", "subject_id": "e2", "object_id": "t"},
+        ],
+        "constraints": [],
+    }
+
+
+def test_no_finish_contract_language():
+    """The researcher legend + rules must never contradict each other
+    about the termination protocol — there is no `finish` tool."""
+    assert "finish(answer=" not in RESEARCHER_LEGEND
+    assert "The `finish` tool" not in RESEARCHER_LEGEND
+    assert "no `finish` tool" in RESEARCHER_LEGEND
+    assert "no `finish` tool" in RESEARCHER_TASK_BANNER
+    assert "no `finish` tool" in RESEARCHER_RULES
+
+
+def test_commit_budget_and_value_hygiene_language():
+    """The per-level researcher prompt should explicitly prevent the
+    observed loop/placeholder failures."""
+    combined = "\n".join([RESEARCHER_TASK_BANNER, RESEARCHER_RULES])
+    assert "Do not spend more than 3 consecutive tool turns on one blank" in combined
+    assert "a partial best-effort list is better" in combined
+    assert "than no update" in combined
+    assert 'value="None"' in combined
+    assert "a JSON/tool-call string" in combined
+
+
+def test_mandatory_escalate_on_retrieval_empty():
+    """Phase-3.1: when no retrieved chunk contains a plausible value,
+    the researcher MUST escalate via suggest_plan_revision — it is not
+    optional. The asymmetric YES/NO rule must be present."""
+    combined = "\n".join([RESEARCHER_TASK_BANNER, RESEARCHER_RULES])
+    assert "Does any retrieved chunk contain a plausible value" in combined
+    assert "MUST call `suggest_plan_revision" in combined
+    assert "mandatory, not" in combined.lower() or "non-negotiable" in combined.lower()
+    # Forbidden-commit subsection
+    assert "Forbidden commit patterns" in combined
+    assert "training-data recall" in combined or "training knowledge" in combined
+
+
+def test_anti_priors_phrase_list_is_present():
+    """Phase-3.1: explicit list of priors-recall phrases that should
+    trigger escalation must be in the prompt + worked example."""
+    combined = "\n".join([RESEARCHER_TASK_BANNER, RESEARCHER_RULES])
+    assert "might need external knowledge" in combined
+    assert "probably" in combined.lower()
+    assert "likely" in combined.lower()
+    assert "based on what I know" in combined
+    # Concrete worked example for the postcode case
+    assert "Wren Clinic" in combined
+    assert "K7 3QN" in combined
+    assert "b_address" in combined
+
+
+def test_level_0_first_researcher_no_prior_values():
+    """At level 0 no blanks are resolved yet; prior-values section
+    should render an explicit empty placeholder so the section never
+    goes missing."""
+    plan = _picasso_floyd_plan()
+    state = {
+        "b_year": BlankResult(blank_id="b_year", status="unknown"),
+        "t": BlankResult(blank_id="t", status="unknown"),
+    }
+    prompt = build_researcher_prompt(
+        plan, ["b_year", "t"], {"b_year": 0, "t": 1},
+        slice_blank_ids=["b_year"],
+        state=state,
+        level_index=0,
+    )
+    assert "## Prior resolved values" in prompt
+    assert "_(none — you are the first researcher)_" in prompt
+    # b_year is in this researcher's slice
+    assert "`b_year`" in prompt
+
+
+def test_level_1_prior_values_included_and_target_visible():
+    """At level 1 the researcher's slice is `t`. The prompt must:
+    (a) list b_year's resolved value in the upstream section,
+    (b) not render b_year as an assignable topo step,
+    (c) drop Picasso (he's only wired to b_year, not to t),
+    (d) flag the target as TARGET."""
+    plan = _picasso_floyd_plan()
+    state = {
+        "b_year": BlankResult(
+            blank_id="b_year", value="1973", status="resolved",
+            evidence_chunk_ids=["picasso_wiki__0"],
+        ),
+        "t": BlankResult(blank_id="t", status="unknown"),
+    }
+    prompt = build_researcher_prompt(
+        plan, ["b_year", "t"], {"b_year": 0, "t": 1},
+        slice_blank_ids=["t"],
+        state=state,
+        level_index=1,
+    )
+    # (a) upstream value visible
+    assert "`b_year`" in prompt
+    assert "'1973'" in prompt
+    # (b) b_year is not an assignable step here
+    assert "Step 2" not in prompt
+    # (c) Picasso dropped (only wired upstream)
+    #     Narrow the check to the "plan for this question" section
+    #     so we don't trip on a prompt example elsewhere.
+    plan_section = prompt.split("## The plan for this question")[1].split("## Prior resolved values")[0]
+    assert "Pablo Picasso" not in plan_section
+    assert "Pink Floyd" in plan_section
+    # (d) target flagged
+    assert "TARGET" in prompt
+
+
+def test_constraint_output_in_slice_renders_as_auto_computed():
+    """If the slice contains a blank that is the output of a
+    constraint, the plan brief should tag it as auto-computed — the
+    researcher is NOT supposed to call update_blank on it."""
+    plan_dict = {
+        "entities": [
+            {"id": "e1", "kind": "filled", "name": "Alice", "role": "subject"},
+            {"id": "b_a", "kind": "blank", "role": "bridge-attribute", "value_type": "text"},
+            {"id": "b_b", "kind": "blank", "role": "bridge-attribute", "value_type": "text"},
+            {
+                "id": "t",
+                "kind": "blank",
+                "role": "target",
+                "value_type": "text",
+                "is_target": True,
+            },
+        ],
+        "verb_phrases": [
+            {"id": "vp1", "phrase": "has_a", "subject_id": "e1", "object_id": "b_a"},
+            {"id": "vp2", "phrase": "has_b", "subject_id": "e1", "object_id": "b_b"},
+        ],
+        "constraints": [
+            {
+                "id": "c1",
+                "kind": "derived",
+                "op": "concat",
+                "args_blanks": ["b_a", "b_b"],
+                "output_blank_id": "t",
+            }
+        ],
+    }
+    state = {
+        "b_a": BlankResult(blank_id="b_a", value="hello", status="resolved"),
+        "b_b": BlankResult(blank_id="b_b", value="world", status="resolved"),
+        "t": BlankResult(blank_id="t", status="unknown"),
+    }
+    prompt = build_researcher_prompt(
+        plan_dict, ["b_a", "b_b", "t"], {"b_a": 0, "b_b": 0, "t": 1},
+        slice_blank_ids=["t"],
+        state=state,
+        level_index=1,
+    )
+    # Target step appears as constraint-driven
+    assert "`t`" in prompt
+    assert "auto-computed" in prompt.lower() or "constraint" in prompt.lower()
+    # Orchestrator-will-auto-compute language must be in the legend
+    assert "ORCHESTRATOR automatically computes" in prompt
+
+
+def test_truncates_long_upstream_values():
+    """Resolved values >80 chars should be truncated in the upstream
+    table to keep the prompt compact."""
+    plan = _picasso_floyd_plan()
+    long_val = "A" * 200
+    state = {
+        "b_year": BlankResult(blank_id="b_year", value=long_val, status="resolved"),
+        "t": BlankResult(blank_id="t", status="unknown"),
+    }
+    prompt = build_researcher_prompt(
+        plan, ["b_year", "t"], {"b_year": 0, "t": 1},
+        slice_blank_ids=["t"], state=state, level_index=1,
+    )
+    assert "..." in prompt  # truncation marker
+    assert long_val not in prompt  # the full 200-char version must not appear
+
+
+def _lean_slice_state():
+    plan = _picasso_floyd_plan()
+    state = {
+        "b_year": BlankResult(blank_id="b_year", status="unknown"),
+        "t": BlankResult(blank_id="t", status="unknown"),
+    }
+    return plan, ["b_year", "t"], {"b_year": 0, "t": 1}, state
+
+
+def test_handoff_hints_appended():
+    plan = _picasso_floyd_plan()
+    state = {
+        "b_year": BlankResult(blank_id="b_year", status="unknown"),
+        "t": BlankResult(blank_id="t", status="unknown"),
+    }
+    common = dict(slice_blank_ids=["b_year"], state=state, level_index=0)
+    base = build_researcher_prompt(plan, ["b_year", "t"], {"b_year": 0, "t": 1}, **common)
+    hints = {"b_year": {"query": "co-founder of Netflix joined environmental group",
+                        "candidate": "Yvon Chouinard", "reason": "not a Netflix cofounder",
+                        "chunk_ids": ["C1", "C2"]}}
+    withh = build_researcher_prompt(plan, ["b_year", "t"], {"b_year": 0, "t": 1},
+                                    handoff_hints=hints, **common)
+    assert withh != base
+    assert "co-founder of Netflix joined environmental group" in withh
+    assert "Yvon Chouinard" in withh and "C1" in withh
+    # default None => byte-identical
+    assert build_researcher_prompt(plan, ["b_year", "t"], {"b_year": 0, "t": 1},
+                                   handoff_hints=None, **common) == base
+
+
+def test_verifier_reasoning_prompt_instruction_is_default_off_identity():
+    plan = _picasso_floyd_plan()
+    state = {
+        "b_year": BlankResult(blank_id="b_year", status="unknown"),
+        "t": BlankResult(blank_id="t", status="unknown"),
+    }
+    common = dict(slice_blank_ids=["b_year"], state=state, level_index=0)
+    base = build_researcher_prompt(
+        plan, ["b_year", "t"], {"b_year": 0, "t": 1}, **common
+    )
+    explicit_off = build_researcher_prompt(
+        plan, ["b_year", "t"], {"b_year": 0, "t": 1},
+        verifier_reasoning=False, **common
+    )
+    with_reasoning = build_researcher_prompt(
+        plan, ["b_year", "t"], {"b_year": 0, "t": 1},
+        verifier_reasoning=True, **common
+    )
+
+    assert explicit_off == base
+    assert "why this value" not in base
+    assert "reasoning" in with_reasoning
+    assert "why this value" in with_reasoning
+    assert with_reasoning != base
+
+
+def test_researcher_prompt_no_feedback_block_when_absent():
+    plan = _picasso_floyd_plan()
+    state = {
+        "b_year": BlankResult(blank_id="b_year", status="unknown"),
+        "t": BlankResult(blank_id="t", status="unknown"),
+    }
+    prompt = build_researcher_prompt(
+        plan, ["b_year", "t"], {"b_year": 0, "t": 1},
+        slice_blank_ids=["t"],
+        state=state,
+        level_index=1,
+        connection_manifests={"t": {"blank_id": "t", "connections": []}},
+    )
+
+    assert "PREVIOUSLY REFUTED" not in prompt
+
+
+# ---------------------------------------------------------------------------
+# Fix wave F5: `read` is the reader sub-agent -- it REQUIRES a `question` and
+# returns an answer -- so the prompt must not document the old contract: the
+# base worked example (`read("verdane__0")`) would return {"error": "read
+# requires a `question` ..."}, and "read is cheap" is false (it costs an LLM
+# call).
+# ---------------------------------------------------------------------------
+
+
+def _state_for(plan):
+    return {
+        "b_year": BlankResult(blank_id="b_year", status="unknown"),
+        "t": BlankResult(blank_id="t", status="unknown"),
+    }
+
+
+def _prompt(**kw):
+    plan = _picasso_floyd_plan()
+    return build_researcher_prompt(
+        plan, ["b_year", "t"], {"b_year": 0, "t": 1},
+        slice_blank_ids=["t"], state=_state_for(plan), level_index=1, **kw,
+    )
+
+
+def test_prompt_drops_the_read_is_cheap_claim():
+    """`read` costs an LLM call, so telling the model it is cheap is false
+    guidance about the tool it actually holds."""
+    assert "read is cheap" not in _prompt()
+
+
+def test_worked_example_passes_a_question():
+    """The example is what the model imitates; without a question it is a
+    guaranteed tool error on the first read."""
+    on = _prompt()
+    assert 'read("verdane__0")' not in on
+    assert 'read("verdane__0", "what was the first single' in on
+
+
+def test_find_is_the_raw_text_fallback():
+    """`find` was documented as preferable to `read`; with the reader it is the
+    raw-text path used when the reader returns not_found."""
+    on = _prompt()
+    assert "Prefer this over `read`" not in on
+    assert "prefer over `read` for one fact" not in on
+    assert "not_found" in on
+
+
+def test_reader_prompt_does_not_advertise_a_tool_that_is_not_registered():
+    """`read` IS the reader and no `ask` tool is registered. The prompt once told
+    the parent `read(chunk_id)` was "Cheap, no model call" -- when every read
+    costs a full reader agent -- and advertised an `ask` tool that is never
+    registered. Measured: 168 FRAMES and 376 MoNaCo calls went to that phantom
+    name."""
+    from panini_dr.adapters.ours._researcher_prompt import build_researcher_prompt
+    kw = dict(plan_dict={"blanks": [{"id": "b1"}]}, order=["b1"], levels={"b1": 0},
+              slice_blank_ids=["b1"], state={}, level_index=0)
+    reader = build_researcher_prompt(**kw)
+    assert "Cheap, no model call" not in reader, "read IS the reader; it costs a call"
+    assert "`ask(chunk_id, question)`" not in reader, "ask is not registered"
+    assert "read(chunk_id, question)" in reader

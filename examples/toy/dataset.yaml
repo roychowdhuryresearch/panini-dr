@@ -1,0 +1,7 @@
+# A tiny synthetic dataset for trying `panini-dr prepare` and `panini-dr run --dataset`.
+# Every place, person and building in it is made up.
+name: toy
+description: Eight synthetic encyclopedia-style articles and three questions about them.
+questions: questions.jsonl
+docs: docs.jsonl
+chunking: paragraph

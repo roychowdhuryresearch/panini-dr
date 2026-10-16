@@ -1,0 +1,165 @@
+{
+ "question_id": "toy-ordering",
+ "question": "Who was older, the guitar player for the Fennick Rovers from 1982-1983 or the lead singer of The Tallows?",
+ "clause": "ordering",
+ "plan": {
+  "entities": [
+   {
+    "id": "e_guitar_role",
+    "kind": "filled",
+    "name": "guitar player for the Fennick Rovers from 1982-1983",
+    "value_type": null,
+    "is_target": false,
+    "category": false,
+    "role": "candidate",
+    "state": null,
+    "literal_value": null,
+    "retrieval_hint": null,
+    "verification_claim": null
+   },
+   {
+    "id": "e_singer_role",
+    "kind": "filled",
+    "name": "lead singer of The Tallows",
+    "value_type": null,
+    "is_target": false,
+    "category": false,
+    "role": "candidate",
+    "state": null,
+    "literal_value": null,
+    "retrieval_hint": null,
+    "verification_claim": null
+   },
+   {
+    "id": "e_period",
+    "kind": "filled",
+    "name": "1982-1983",
+    "value_type": null,
+    "is_target": false,
+    "category": false,
+    "role": "year-anchor",
+    "state": null,
+    "literal_value": null,
+    "retrieval_hint": null,
+    "verification_claim": null
+   },
+   {
+    "id": "b_guitar_person",
+    "kind": "blank",
+    "name": null,
+    "value_type": "entity",
+    "is_target": true,
+    "category": false,
+    "role": "bridge-entity",
+    "state": null,
+    "literal_value": null,
+    "retrieval_hint": "Who was the guitar player for the Fennick Rovers from 1982-1983?",
+    "verification_claim": "The answer must be the person who served as the guitar player for the Fennick Rovers from 1982-1983."
+   },
+   {
+    "id": "b_singer_person",
+    "kind": "blank",
+    "name": null,
+    "value_type": "entity",
+    "is_target": false,
+    "category": false,
+    "role": "bridge-entity",
+    "state": null,
+    "literal_value": null,
+    "retrieval_hint": "Who was the lead singer of The Tallows?",
+    "verification_claim": "The answer must be the lead singer of The Tallows."
+   },
+   {
+    "id": "b_birth_guitar",
+    "kind": "blank",
+    "name": null,
+    "value_type": "date",
+    "is_target": false,
+    "category": false,
+    "role": "bridge-date",
+    "state": null,
+    "literal_value": null,
+    "retrieval_hint": "What is the birth date of {b_guitar_person}?",
+    "verification_claim": "The date must be the birth date of {b_guitar_person}."
+   },
+   {
+    "id": "b_birth_singer",
+    "kind": "blank",
+    "name": null,
+    "value_type": "date",
+    "is_target": false,
+    "category": false,
+    "role": "bridge-date",
+    "state": null,
+    "literal_value": null,
+    "retrieval_hint": "What is the birth date of {b_singer_person}?",
+    "verification_claim": "The date must be the birth date of {b_singer_person}."
+   },
+   {
+    "id": "t",
+    "kind": "blank",
+    "name": null,
+    "value_type": "entity",
+    "is_target": false,
+    "category": false,
+    "role": "target",
+    "state": null,
+    "literal_value": null,
+    "retrieval_hint": "Who was older, the guitar player for the Fennick Rovers from 1982-1983 or the lead singer of The Tallows?",
+    "verification_claim": "The answer must be the older of the two individuals: the guitar player for the Fennick Rovers from 1982-1983 or the lead singer of The Tallows."
+   }
+  ],
+  "verb_phrases": [
+   {
+    "id": "vp1",
+    "phrase": "person",
+    "subject_id": "e_guitar_role",
+    "object_id": "b_guitar_person"
+   },
+   {
+    "id": "vp2",
+    "phrase": "born_on",
+    "subject_id": "b_guitar_person",
+    "object_id": "b_birth_guitar"
+   },
+   {
+    "id": "vp3",
+    "phrase": "person",
+    "subject_id": "e_singer_role",
+    "object_id": "b_singer_person"
+   },
+   {
+    "id": "vp4",
+    "phrase": "born_on",
+    "subject_id": "b_singer_person",
+    "object_id": "b_birth_singer"
+   },
+   {
+    "id": "vp5",
+    "phrase": "active_during",
+    "subject_id": "b_guitar_person",
+    "object_id": "e_period"
+   }
+  ],
+  "constraints": [
+   {
+    "id": "c1",
+    "kind": "argmin",
+    "op": null,
+    "args_blanks": [],
+    "args_refs": [],
+    "candidate_entity_ids": [
+     "e_guitar_role",
+     "e_singer_role"
+    ],
+    "sort_by_blank_ids": [
+     "b_birth_guitar",
+     "b_birth_singer"
+    ],
+    "left_ref": null,
+    "right_ref": null,
+    "output_blank_id": "t"
+   }
+  ]
+ }
+}

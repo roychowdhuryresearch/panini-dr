@@ -1,0 +1,243 @@
+{
+  "_about": "Configuration the paper runs could not exercise, whose code was removed from this repository. 'keys': config keys (runner options) that no longer exist; 'paper_value' is the value every paper run used, which is now the only behaviour. A 'recorded' key is part of the paper's recorded config (configs/paper.json and every paper run's cell_result.json): it is still written into a run's recorded config with that value so runs stay comparable with the paper's records, but no code reads it. An unrecorded key was left at its off default by the paper runs, which the research runner omitted from the recorded config. 'values': values of a surviving key whose code was removed. 'env_vars': environment variables that only switched removed code. Setting any of these is an error. The config-identity check asserts resolved config + recorded removed keys == configs/paper.json.",
+  "keys": {
+    "orchestrator_mode": {
+      "paper_value": "llm",
+      "recorded": true,
+      "reason": "The deterministic level-by-level orchestrator was removed; the LLM orchestrator is the only one."
+    },
+    "gsw_orchestrator_live": {
+      "paper_value": true,
+      "recorded": true,
+      "reason": "The orchestrator prompt that was rebuilt from scratch every turn was removed; the orchestrator is one live conversation."
+    },
+    "gsw_planner_tool": {
+      "paper_value": true,
+      "recorded": true,
+      "reason": "Emitting the plan before the orchestrator loop was removed; the orchestrator always requests it through the call_planner tool."
+    },
+    "gsw_plan_only": {
+      "paper_value": false,
+      "recorded": false,
+      "reason": "The plan-only measurement mode (stop once the plan is approved) was removed."
+    },
+    "gsw_question_turn_budget": {
+      "paper_value": 0,
+      "recorded": false,
+      "reason": "The per-question turn budget (an ablation; 0 = off) was removed."
+    },
+    "gsw_recovery": {
+      "paper_value": "false",
+      "recorded": true,
+      "reason": "The post-loop recovery mechanisms (M1 re-dispatch of a cascade-blocked input, M2 bounded overwrite past the dispatch cap, M3 holistic answer) were removed; gsw_recovery_diag is still written."
+    },
+    "gsw_recovery_redispatch": {
+      "paper_value": false,
+      "recorded": false,
+      "reason": "M1 recovery (re-dispatch of a cascade-blocked input) was removed."
+    },
+    "gsw_recovery_overwrite": {
+      "paper_value": false,
+      "recorded": false,
+      "reason": "M2 recovery (bounded overwrite past the per-blank dispatch cap) was removed."
+    },
+    "gsw_recovery_holistic_fallback": {
+      "paper_value": false,
+      "recorded": false,
+      "reason": "M3 recovery (one holistic answer over the gathered evidence) was removed."
+    },
+    "gsw_recovery_max_redispatch": {
+      "paper_value": 1,
+      "recorded": true,
+      "reason": "Bound of the removed M1 recovery."
+    },
+    "gsw_recovery_max_overwrites": {
+      "paper_value": 1,
+      "recorded": true,
+      "reason": "Bound of the removed M2 recovery."
+    },
+    "gsw_fixpack_v1": {
+      "paper_value": false,
+      "recorded": false,
+      "reason": "The fixpack (per-blank re-dispatch cap, best-effort partial synthesis, anchored retrieval hint) was removed."
+    },
+    "gsw_champ_sidecar": {
+      "paper_value": false,
+      "recorded": false,
+      "reason": "The workspace-extract sidecar read (a second model turning each read article into a GSW instance) was removed."
+    },
+    "gsw_sidecar_base_url": {
+      "paper_value": "",
+      "recorded": false,
+      "reason": "Endpoint of the removed sidecar."
+    },
+    "gsw_sidecar_model": {
+      "paper_value": "attnonly",
+      "recorded": false,
+      "reason": "Model of the removed sidecar."
+    },
+    "gsw_researcher_resume": {
+      "paper_value": false,
+      "recorded": false,
+      "reason": "Resuming a blank's previous researcher session (messages + tool archive) on re-dispatch was removed; every dispatch starts a fresh researcher."
+    },
+    "gsw_investigation_memory_render": {
+      "paper_value": false,
+      "recorded": false,
+      "reason": "Rendering an 'Investigation so far' briefing from the investigation memory into the researcher prompt was removed (the memory dossier, gsw_memory_dossier, is what the paper used)."
+    },
+    "gsw_search_dedup": {
+      "paper_value": false,
+      "recorded": true,
+      "reason": "The per-question search ledger that served repeated searches without retrieval (a post-paper cost lever) was removed."
+    },
+    "gsw_researcher_stateful": {
+      "paper_value": false,
+      "recorded": true,
+      "reason": "The stateful researcher (each call rebuilt from a code-written STATE block plus the latest observation, with a recall tool; a post-paper cost lever) was removed."
+    },
+    "gsw_agentic_read": {
+      "paper_value": true,
+      "recorded": true,
+      "reason": "Reading without the reader sub-agent (raw article windows) was removed; `read` is the reader."
+    },
+    "gsw_read_is_reader": {
+      "paper_value": true,
+      "recorded": true,
+      "reason": "The arm with a raw-window `read` plus a separate `ask` reader tool was removed; `read` is the reader."
+    },
+    "gsw_read_promotion": {
+      "paper_value": true,
+      "recorded": true,
+      "reason": "The pre-promotion prompt wording and prefix (instead of query-centred) search snippets were removed."
+    },
+    "gsw_read_v1": {
+      "paper_value": false,
+      "recorded": false,
+      "reason": "Legacy read nudges (softer prompt wording, snippet previews in compacted search results) were removed."
+    },
+    "gsw_planner_base_url": {
+      "paper_value": "",
+      "recorded": false,
+      "reason": "The planner-only model route was removed; the planner uses the main client."
+    },
+    "gsw_planner_model": {
+      "paper_value": "",
+      "recorded": false,
+      "reason": "The planner-only model route was removed; the planner uses the main client."
+    },
+    "gsw_planner_reasoning_effort": {
+      "paper_value": "",
+      "recorded": false,
+      "reason": "Per-role model routing / reasoning effort was removed; every role uses the one served model at reasoning_effort."
+    },
+    "gsw_auditor_reasoning_effort": {
+      "paper_value": "",
+      "recorded": false,
+      "reason": "Per-role model routing / reasoning effort was removed; every role uses the one served model at reasoning_effort."
+    },
+    "gsw_orchestrator_reasoning_effort": {
+      "paper_value": "",
+      "recorded": false,
+      "reason": "Per-role model routing / reasoning effort was removed; every role uses the one served model at reasoning_effort."
+    },
+    "gsw_validator_reasoning_effort": {
+      "paper_value": "",
+      "recorded": false,
+      "reason": "Per-role model routing / reasoning effort was removed; every role uses the one served model at reasoning_effort."
+    },
+    "gsw_reader_reasoning_effort": {
+      "paper_value": "",
+      "recorded": false,
+      "reason": "Per-role model routing / reasoning effort was removed; every role uses the one served model at reasoning_effort."
+    },
+    "gsw_planner_tool_max_calls": {
+      "paper_value": 0,
+      "recorded": false,
+      "reason": "The override of the planner-call cap was removed; the cap is 3 (MAX_PLANNER_TOOL_CALLS, a pinned adapter default)."
+    },
+    "gsw_prose_plan": {
+      "paper_value": "off",
+      "recorded": false,
+      "reason": "Two-stage planning (a prose decomposition before the plan, plus a passive divergence critic) was removed."
+    },
+    "gsw_validator_parse_guard": {
+      "paper_value": false,
+      "recorded": false,
+      "reason": "The parse guard that turned an unparseable synthesis-validator reply into 'wrong' was removed; such a reply counts as 'correct', as in the paper runs."
+    },
+    "gsw_grounding_holistic_fallback": {
+      "paper_value": false,
+      "recorded": true,
+      "reason": "The grounding holistic fallback (a lenient verify after the strict retry budget is spent) was removed."
+    },
+    "gsw_grounding_strict_tries": {
+      "paper_value": 2,
+      "recorded": true,
+      "reason": "Strict-retry budget of the removed grounding holistic fallback (never read with the fallback off)."
+    },
+    "gsw_candidate_evidence_matrix": {
+      "paper_value": false,
+      "recorded": true,
+      "reason": "The candidate-keyed evidence matrix (per-candidate bind_connection rows and a coverage table) was removed; bound evidence is one map per blank."
+    },
+    "gsw_rival_scan": {
+      "paper_value": false,
+      "recorded": true,
+      "reason": "The rival scan (retrieved-but-uncited chunks added to the verify call) was removed."
+    },
+    "gsw_edge_grounded": {
+      "paper_value": true,
+      "recorded": true,
+      "reason": "The non-edge-grounded commit check was removed; every commit is edge-grounded (bind_connection evidence per factual edge, then one holistic verify)."
+    },
+    "gsw_blank_verifier": {
+      "paper_value": true,
+      "recorded": true,
+      "reason": "Running without the blank verifier was removed; the verifier always runs."
+    },
+    "gsw_blank_verifier_mode": {
+      "paper_value": "enforce",
+      "recorded": true,
+      "reason": "The verifier modes off / observe / feedback / structural were removed; it always enforces."
+    },
+    "gsw_verifier_max_retries": {
+      "paper_value": 2,
+      "recorded": true,
+      "reason": "Re-attempt cap of the removed non-edge-grounded commit check; the edge-grounded check uses gsw_edge_grounded_cap."
+    },
+    "gsw_verifier_cap_policy": {
+      "paper_value": "accept_with_flag",
+      "recorded": true,
+      "reason": "Cap policy of the removed non-edge-grounded commit check."
+    },
+    "gsw_qualifier_grounding_policy": {
+      "paper_value": "lenient",
+      "recorded": true,
+      "reason": "Stored by the research adapter but never read; removed so it cannot be set to no effect."
+    },
+    "gsw_codegen_frozen": {
+      "paper_value": true,
+      "recorded": true,
+      "reason": "The codegen library ran frozen (library hits only); the generation path for a miss (LLM-written function, AST sandbox, persisted store) was removed."
+    }
+  },
+  "values": {
+    "gsw_evidence_gate": {
+      "removed": [
+        "enforce"
+      ],
+      "reason": "The 'enforce' evidence gate (reject a commit citing no real chunk) was removed; 'measure' (the paper's) and 'off' remain."
+    },
+    "reranker": {
+      "removed": [
+        "voyage"
+      ],
+      "reason": "The Voyage API reranker was removed; the paper ran jina."
+    }
+  },
+  "env_vars": {
+    "PANINI_SIDECAR_BASE_URL": "default endpoint of the removed workspace-extract sidecar (gsw_champ_sidecar)",
+    "GSW_READ_TITLE_FALLBACK": "post-paper opt-in: resolve a constructed chunk id by its docid or bare title; removed (an unknown chunk id is an error, as in the paper runs)"
+  }
+}

@@ -1,0 +1,45 @@
+{
+    "_meta": {
+        "_source": "cell_result.json _20260624_012625",
+        "_n_total": 100,
+        "_n_judge_correct": 82,
+        "_judge_accuracy": 0.82
+    },
+    "nongsw_config": {
+        "llm_temperature": 0.0,
+        "max_completion_tokens": 16384,
+        "max_prompt_tokens": 32000,
+        "max_turns": 50,
+        "orchestrator_mode": "llm",
+        "reasoning_effort": "medium",
+        "retriever_type": "hybrid",
+        "synthesis_validator_mode": "repair"
+    },
+    "gsw_config": {
+        "gsw_blank_hints": true,
+        "gsw_blank_qualifier": true,
+        "gsw_blank_verifier": true,
+        "gsw_blank_verifier_mode": "enforce",
+        "gsw_block_unverified_cascade": false,
+        "gsw_context_compaction": true,
+        "gsw_edge_grounded": true,
+        "gsw_evidence_gate": "measure",
+        "gsw_evidence_grounder": "llm",
+        "gsw_evidence_state": true,
+        "gsw_hard_type_filter": true,
+        "gsw_max_plan_updates": 5,
+        "gsw_plan_issue_surface": "advisory",
+        "gsw_plan_quality_checks": true,
+        "gsw_plan_update_guard": "enforce",
+        "gsw_qualifier_grounding_policy": "lenient",
+        "gsw_react_fallback": true,
+        "gsw_typed_blank_resolver": true,
+        "gsw_verifier_cap_policy": "accept_with_flag",
+        "gsw_verifier_max_retries": 2,
+        "gsw_verifier_reasoning": true,
+        "gsw_verifier_scoped": true,
+        "gsw_recovery": "false",
+        "gsw_recovery_max_overwrites": 1,
+        "gsw_recovery_max_redispatch": 1
+    }
+}

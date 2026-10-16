@@ -1,0 +1,3 @@
+{"id": "toy-1", "question": "Which river flows through the birthplace of the composer of the opera The Glass Orchard?", "answer": "Varno River"}
+{"id": "toy-2", "question": "In which town was the architect of the theatre where The Glass Orchard premiered born?", "answer": "Calder Ford"}
+{"id": "toy-3", "question": "Which towns does the Varno River flow through?", "answer": ["Tessby", "Orlin", "Calder Ford"], "answer_type": "set"}
